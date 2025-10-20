@@ -182,7 +182,7 @@ type EnvelopeOS struct {
 
 func (c *Client) CreateServer(ctx context.Context, reqBody *CreateServerRequest) (*ServerListItem, error) {
 	var env EnvelopeServerListItem
-	if err := c.do(ctx, http.MethodPost, "/v1/servers", reqBody, &env); err != nil {
+	if err := c.do(ctx, http.MethodPost, "/v1/ordering/allocate", reqBody, &env); err != nil {
 		return nil, err
 	}
 	if !env.Success {
@@ -195,7 +195,7 @@ func (c *Client) CreateServer(ctx context.Context, reqBody *CreateServerRequest)
 
 func (c *Client) GetServer(ctx context.Context, id string) (*Server, error) {
 	var env EnvelopeServer
-	if err := c.do(ctx, http.MethodGet, "/v1/servers/"+url.PathEscape(id), nil, &env); err != nil {
+	if err := c.do(ctx, http.MethodGet, "/v1/resources/"+url.PathEscape(id), nil, &env); err != nil {
 		return nil, err
 	}
 	if !env.Success {
@@ -206,7 +206,7 @@ func (c *Client) GetServer(ctx context.Context, id string) (*Server, error) {
 }
 
 func (c *Client) DeleteServer(ctx context.Context, id string) error {
-	return c.do(ctx, http.MethodDelete, "/v1/servers/"+url.PathEscape(id), nil, nil)
+	return c.do(ctx, http.MethodDelete, "/v1/resources/"+url.PathEscape(id), nil, nil)
 }
 
 func (c *Client) ListPlans(ctx context.Context, location string) ([]Plan, error) {

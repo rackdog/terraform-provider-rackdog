@@ -21,9 +21,9 @@ variable "api_key"  {
 }
 
 resource "rackdog_server" "web" {
-  plan_id     = 101   # <- int
-  location_id = 3     # <- int
-  os_id       = 62    # <- int
+  plan_id     = 8
+  location_id = 1
+  os_id       = 48
   hostname    = "web-01"
 }
 
