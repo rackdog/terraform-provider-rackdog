@@ -4,7 +4,6 @@ package main
 import (
 	"context"
 	"flag"
-	"log"
 	"github.com/hashicorp/terraform-plugin-framework/providerserver"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 	"github.com/rackdog/terraform-provider-rackdog/internal/provider"
@@ -17,12 +16,13 @@ func main() {
 	flag.Parse()
 
 	ctx := context.Background()
+
 	if *debug {
-		tflog.SetLogger(log.Default())
+		tflog.Info(ctx, "Debug logging enabled")
 	}
 
 	providerserver.Serve(ctx, provider.New(version), providerserver.ServeOpts {
-		Address: "registry.terraform.io/rackdog/rackdog"
+		Address: "registry.terraform.io/rackdog/rackdog",
 	})
 	
 }

@@ -236,7 +236,7 @@ func (c *Client) CheckRaid(ctx context.Context, raid int, planID int) (bool, err
 	return true, nil
 }
 
-func (c *Client) ListOperatingSystems(ctx context.Context) ([]ServerOSDto, error) {
+func (c *Client) ListOperatingSystems(ctx context.Context) ([]ServerOS, error) {
 	var env EnvelopeOS
 	if err := c.do(ctx, http.MethodGet, "/v1/ordering/os", nil, &env); err != nil {
 		return nil, err

@@ -7,7 +7,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/provider"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
-	"github.com/hashicorp/terraform-plugin-framework/schema"
+	"github.com/hashicorp/terraform-plugin-framework/provider/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 )
@@ -23,8 +23,8 @@ func New(version string) func() provider.Provider {
 }
 
 type providerModel struct {
-	Endpoint 	types.String `tfsdk:"endpoint"`,
-	APIKey 	types.String `tfsdk:"api_key"`,
+	Endpoint types.String `tfsdk:"endpoint"`
+	APIKey 	types.String `tfsdk:"api_key"`
 }
 
 func (p *rackdogProvider) Metadata(_ context.Context, _ provider.MetadataRequest, resp *provider.MetadataResponse) {

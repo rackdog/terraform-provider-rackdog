@@ -6,7 +6,7 @@ import (
 	"net/http"
 
 	"github.com/hashicorp/terraform-plugin-framework/resource"
-	"github.com/hashicorp/terraform-plugin-framework/schema"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
@@ -114,7 +114,8 @@ func (r *serverResource) Create(ctx context.Context, req resource.CreateRequest,
 	}
 
 	// Hydrate full details
-	r.Read(ctx, resource.ReadRequest{State: resp.State.Raw}, &resp.ReadResponse)
+	//r.Read(ctx, resource.ReadRequest{State: resp.State}, &resp.ReadResponse)
+	return
 }
 
 func (r *serverResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
