@@ -14,6 +14,7 @@ resource "rackdog_server" "web" {
   location_id = 1
   os_id       = 48
   hostname    = "web-01"
+  recreate_on_missing    = false
 }
 
 output "server_id"      { value = rackdog_server.web.id }

@@ -12,6 +12,17 @@ import (
 	"time"
 )
 
+type HTTPError struct {
+	Status int
+	Method string
+	URL    string
+	Body   string
+}
+
+func (e *HTTPError) Error() string {
+	return fmt.Sprintf("%s %s failed: %d - %s", e.Method, e.URL, e.Status, e.Body)
+}
+
 type Client struct {
 	base   string
 	apiKey string
@@ -61,7 +72,12 @@ func (c *Client) do(ctx context.Context, method, path string, body any, out any)
 	}
 
 	b, _ := io.ReadAll(resp.Body)
-	return fmt.Errorf("%s %s failed: %s - %s", method, u, resp.Status, string(b))
+	return &HTTPError{
+		Status: resp.StatusCode,
+		Method: method,
+		URL:    u,
+		Body:   string(b),
+	}
 }
 
 // ---- API models (mirror JSON) ----
@@ -122,7 +138,7 @@ type ServerListItem struct {
 type CPU struct {
 	Name  string `json:"name"`
 	Cores int    `json:"cores"`
-	Speed string `json:"speed"`
+	Speed float64 `json:"speedGhz"`
 }
 
 type Price struct {
@@ -143,7 +159,7 @@ type Plan struct {
 	Price     Price          `json:"price"`
 	Locations []PlanLocation `json:"locations"`
 	RAMGB     int            `json:"ram"`
-	Storage   string         `json:"storage"`
+	Storage   string         `json:"storageGb"`
 }
 
 ////////
@@ -206,7 +222,7 @@ func (c *Client) GetServer(ctx context.Context, id string) (*Server, error) {
 }
 
 func (c *Client) DeleteServer(ctx context.Context, id string) error {
-	return c.do(ctx, http.MethodDelete, "/v1/servers/"+url.PathEscape(id), nil, nil)
+	return c.do(ctx, http.MethodDelete, "/v1/servers/"+url.PathEscape(id)+"/destroy", nil, nil)
 }
 
 func (c *Client) ListPlans(ctx context.Context, location string) ([]Plan, error) {
