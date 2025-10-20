@@ -15,8 +15,8 @@ locals {
 }
 
 resource "rackdog_server" "web" {
-  plan_id     = tonumber(local.chosen_plan.id)         
-  location_id = 3
+  plan_id     = local.chosen_plan.id
+  location_id = 1
   os_id       = local.chosen_os.id                    
   hostname    = "web-01"
   # raid     = 1

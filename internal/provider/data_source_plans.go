@@ -18,7 +18,7 @@ type plansModel struct {
 }
 
 type planItem struct {
-	ID       types.String `tfsdk:"id"`
+	ID       types.Int64 `tfsdk:"id"`
 	Name     types.String `tfsdk:"name"`
 	RAMGB    types.Int64  `tfsdk:"ram"`
 	Storage  types.String `tfsdk:"storage"`
@@ -87,7 +87,7 @@ func (d *plansDataSource) Read(ctx context.Context, req datasource.ReadRequest, 
 	state := plansModel{Location: config.Location, Plans: make([]planItem, 0, len(plans))}
 	for _, p := range plans {
 		state.Plans = append(state.Plans, planItem{
-			ID:           types.StringValue(p.ID),
+			ID:           types.Int64Value(int64(p.ID)),
 			Name:         types.StringValue(p.Name),
 			RAMGB:        types.Int64Value(int64(p.RAMGB)),
 			Storage:      types.StringValue(p.Storage),

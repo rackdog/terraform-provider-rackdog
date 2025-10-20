@@ -8,6 +8,10 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
+	"fmt"
 )
 
 type serverResource struct{ client *Client }
@@ -35,12 +39,42 @@ func (r *serverResource) Schema(_ context.Context, _ resource.SchemaRequest, res
 		Description: "Manages Rackdog servers.",
 		Attributes: map[string]schema.Attribute{
 			"id":          schema.StringAttribute{Computed: true},
-			"plan_id":     schema.Int64Attribute{Required: true},
-			"location_id": schema.Int64Attribute{Required: true},
-			"os_id":       schema.Int64Attribute{Required: true},
-			"raid":        schema.Int64Attribute{Optional: true},         
-			"hostname":    schema.StringAttribute{Optional: true},        
-			"ip_address":  schema.StringAttribute{Computed: true},
+			"plan_id":     schema.Int64Attribute{
+				Required: true,
+				PlanModifiers: []planmodifier.Int64{
+					int64planmodifier.RequiresReplace(),
+				},
+			},
+			"location_id": schema.Int64Attribute{
+				Required: true,
+				PlanModifiers: []planmodifier.Int64{
+					int64planmodifier.RequiresReplace(),
+				},
+			},
+			"os_id":       schema.Int64Attribute{
+				Required: true,
+				PlanModifiers: []planmodifier.Int64{
+					int64planmodifier.RequiresReplace(),
+				},
+			},
+			"raid":        schema.Int64Attribute{
+				Optional: true,
+				PlanModifiers: []planmodifier.Int64{
+					int64planmodifier.RequiresReplace(),
+				},
+			},         
+			"hostname":    schema.StringAttribute{
+				Optional: true,
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.RequiresReplace(),
+				},
+			},        
+			"ip_address":  schema.StringAttribute{
+				Computed: true,
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.RequiresReplace(),
+				},
+			},
 			"status":      schema.StringAttribute{Computed: true},
 		},
 	}
@@ -142,6 +176,56 @@ func (r *serverResource) Read(ctx context.Context, req resource.ReadRequest, res
 	if s == nil {
 		resp.Diagnostics.AddError("Server missing", "API returned no error but also no server")
 		return
+	}
+
+	if !state.Hostname.IsNull() && s.Hostname != nil && state.Hostname.ValueString() != *s.Hostname {
+		resp.Diagnostics.AddError(
+			"Out-of-band change detected (hostname)",
+			fmt.Sprintf("Remote hostname is %q but state expected %q. This likely happened outside Terraform (portal/api). "+
+				"Please reconcile: either update your config to match, import the correct resource, or replace this server.",
+				*s.Hostname, state.Hostname.ValueString()),
+			)
+		return
+	}
+
+	if s.Plan.ID != 0 && state.PlanID.ValueInt64() != 0 {
+		if state.PlanID.ValueInt64() != int64(s.Plan.ID) {
+			resp.Diagnostics.AddError(
+				"Out-of-band change detected (plan_id)",
+				"Remote plan differs from state; reconcile manually and re-run.",
+			)
+			return
+		}
+	}
+
+	if s.Location.ID != 0 && state.LocationID.ValueInt64() != 0 {
+		if state.LocationID.ValueInt64() != int64(s.Location.ID) {
+			resp.Diagnostics.AddError(
+				"Out-of-band change detected (location_id)",
+				"Remote location differs from state; reconcile manually and re-run.",
+			)
+			return
+		}
+	}
+
+	if s.ServerOS != nil && state.OSID.ValueInt64() != 0 {
+		if int64(s.ServerOS.ID) != state.OSID.ValueInt64() {
+			resp.Diagnostics.AddError(
+				"Out-of-band change detected (os_id)",
+				"Remote OS differs from state; reconcile manually and re-run.",
+			)
+			return
+		}
+	}
+
+	if s.Raid != nil && !state.Raid.IsNull() && !state.Raid.IsUnknown() {
+		if int(state.Raid.ValueInt64()) != *s.Raid {
+			resp.Diagnostics.AddError(
+				"Out-of-band change detected (raid)",
+				"Remote RAID differs from state; reconcile manually and re-run.",
+			)
+			return
+		}
 	}
 
 	state.IPAddress = types.StringValue(s.IPAddress)

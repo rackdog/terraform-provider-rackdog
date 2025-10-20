@@ -130,14 +130,14 @@ type Price struct {
 }
 
 type PlanLocation struct {
-	ID           string `json:"id"`
+	ID           int `json:"id"`
 	Name         string `json:"name"`
 	Keyword      string `json:"keyword"`
 	MonthlyPrice int    `json:"monthlyPrice"`
 }
 
 type Plan struct {
-	ID        string         `json:"id"`
+	ID        int         `json:"id"`
 	Name      string         `json:"name"`
 	CPU       CPU            `json:"cpu"`
 	Price     Price          `json:"price"`
