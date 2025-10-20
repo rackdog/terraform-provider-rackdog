@@ -139,6 +139,10 @@ func (r *serverResource) Read(ctx context.Context, req resource.ReadRequest, res
 		resp.Diagnostics.AddError("Read failed", err.Error())
 		return
 	}
+	if s == nil {
+		resp.Diagnostics.AddError("Server missing", "API returned no error but also no server")
+		return
+	}
 
 	state.IPAddress = types.StringValue(s.IPAddress)
 	if s.Hostname != nil {
