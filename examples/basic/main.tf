@@ -7,18 +7,7 @@ terraform {
   }
 }
 
-provider "rackdog" {
-  endpoint = var.endpoint
-  api_key  = var.api_key
-}
-
-variable "endpoint" { 
-    type = string 
-}
-variable "api_key"  { 
-    type = string
-    sensitive = true 
-}
+provider "rackdog" {}
 
 resource "rackdog_server" "web" {
   plan_id     = 8
@@ -29,5 +18,4 @@ resource "rackdog_server" "web" {
 
 output "server_id"      { value = rackdog_server.web.id }
 output "server_ip"      { value = rackdog_server.web.ip_address }
-output "server_status"  { value = rackdog_server.web.status }
 

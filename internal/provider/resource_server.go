@@ -103,10 +103,8 @@ func (r *serverResource) Create(ctx context.Context, req resource.CreateRequest,
 	if created.Hostname != nil {
 		plan.Hostname = types.StringValue(*created.Hostname)
 	}
-	if created.PowerStatus != nil {
-		plan.Status = types.StringValue(*created.PowerStatus)
-	}
 	plan.IPAddress = types.StringValue(created.IPAddress)
+	plan.Status = types.StringNull()
 
 	resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)
 	if resp.Diagnostics.HasError() {

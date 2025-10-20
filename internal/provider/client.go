@@ -77,19 +77,19 @@ type ServerOS struct {
 }
 
 type ServerPlan struct {
-	ID      string `json:"id"`
+	ID      int `json:"id"`
 	Name    string `json:"name"`
 	RAMGB   int    `json:"ram"`
-	Storage string `json:"storage"`
+	Storage int `json:"storage"`
 	CPUName string `json:"cpuName"`
 	Cores   int    `json:"cores"`
 }
 
 type ServerLocation struct {
-	ID      string `json:"id"`
+	ID      int `json:"id"`
 	Name    string `json:"name"`
 	Keyword string `json:"keyword"`
-	Country int    `json:"country"`
+	Country string    `json:"country"`
 }
 
 type CreateServerRequest struct {
@@ -105,7 +105,7 @@ type Server struct {
 	Plan         ServerPlan     `json:"plan"`
 	Location     ServerLocation `json:"location"`
 	ServerOS     *ServerOS      `json:"serverOS,omitempty"`
-	Raid         *string        `json:"raid,omitempty"`
+	Raid         *int        	`json:"raid,omitempty"`
 	Hostname     *string        `json:"hostname,omitempty"`
 	IPAddress    string         `json:"ipAddress,omitempty"`
 	PowerStatus  *string        `json:"devicePowerStatus,omitempty"`
@@ -195,7 +195,7 @@ func (c *Client) CreateServer(ctx context.Context, reqBody *CreateServerRequest)
 
 func (c *Client) GetServer(ctx context.Context, id string) (*Server, error) {
 	var env EnvelopeServer
-	if err := c.do(ctx, http.MethodGet, "/v1/resources/"+url.PathEscape(id), nil, &env); err != nil {
+	if err := c.do(ctx, http.MethodGet, "/v1/servers/"+url.PathEscape(id), nil, &env); err != nil {
 		return nil, err
 	}
 	if !env.Success {
@@ -206,7 +206,7 @@ func (c *Client) GetServer(ctx context.Context, id string) (*Server, error) {
 }
 
 func (c *Client) DeleteServer(ctx context.Context, id string) error {
-	return c.do(ctx, http.MethodDelete, "/v1/resources/"+url.PathEscape(id), nil, nil)
+	return c.do(ctx, http.MethodDelete, "/v1/servers/"+url.PathEscape(id), nil, nil)
 }
 
 func (c *Client) ListPlans(ctx context.Context, location string) ([]Plan, error) {

@@ -16,11 +16,14 @@ install: build
 example-init:
 	cd examples/basic && terraform init
 
+example-plan:
+	set -a; source .env; set +a && cd examples/basic && terraform plan
+
 example-apply:
-	cd examples/basic && terraform apply -auto-approve
+	set -a; source .env; set +a && cd examples/basic && terraform apply -auto-approve
 
 example-destroy:
-	cd examples/basic && terraform destroy -auto-approve
+	set -a; source .env; set +a && cd examples/basic && terraform destroy -auto-approve
 
 fmt:
 	go fmt ./...
