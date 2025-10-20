@@ -82,6 +82,7 @@ func (p *rackdogProvider) Resources(_ context.Context) []func() resource.Resourc
 func (p *rackdogProvider) DataSources(_ context.Context) []func() datasource.DataSource {
 	return []func() datasource.DataSource{
 		NewPlansDataSource,
+		NewOperatingSystemsDataSource,
 	}
 }
 

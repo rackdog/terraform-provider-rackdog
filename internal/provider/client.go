@@ -67,12 +67,12 @@ func (c *Client) do(ctx context.Context, method, path string, body any, out any)
 // ---- API models (mirror JSON) ----
 
 type JobStatus struct {
-	ID   string `json:"id"`
+	ID   int `json:"id"`
 	Name string `json:"name"`
 }
 
 type ServerOS struct {
-	ID   string `json:"id"`
+	ID   int `json:"id"`
 	Name string `json:"name"`
 }
 
@@ -174,6 +174,12 @@ type EnvelopeRaidCheck struct {
 	Message string `json:"message"`
 }
 
+type EnvelopeOS struct {
+	Success bool           `json:"success"`
+	Data    []ServerOS     `json:"data"`
+	Message string         `json:"message"`
+}
+
 func (c *Client) CreateServer(ctx context.Context, reqBody *CreateServerRequest) (*ServerListItem, error) {
 	var env EnvelopeServerListItem
 	if err := c.do(ctx, http.MethodPost, "/v1/servers", reqBody, &env); err != nil {
@@ -224,10 +230,19 @@ func (c *Client) CheckRaid(ctx context.Context, raid int, planID int) (bool, err
 	if err := c.do(ctx, http.MethodGet, path, nil, &env); err != nil {
 		return false, err
 	}
-	// If API returns Success=false with a message, bubble it up as an error to be user-visible in Terraform.
 	if !env.Success {
 		return false, fmt.Errorf(env.Message)
 	}
 	return true, nil
 }
 
+func (c *Client) ListOperatingSystems(ctx context.Context) ([]ServerOSDto, error) {
+	var env EnvelopeOS
+	if err := c.do(ctx, http.MethodGet, "/v1/ordering/os", nil, &env); err != nil {
+		return nil, err
+	}
+	if !env.Success {
+		return nil, fmt.Errorf(env.Message)
+	}
+	return env.Data, nil
+}
