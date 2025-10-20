@@ -3,6 +3,8 @@ VERSION?=0.0.1
 OS=$(shell go env GOOS)
 ARCH=$(shell go env GOARCH)
 INSTALL_DIR=$(HOME)/.local/share/terraform/plugins/$(PLUGIN_ADDR)/$(VERSION)/$(OS)_$(ARCH)
+RACKDOG_API_KEY=$(cat .env | grep "KEY" | awk -F'=' '{print $2}')
+RACKDOG_ENDPOINT=$(cat .env | grep "RACKDOG_ENDPOINT" | awk -F'=' '{print $2}')
 
 build:
 	go build -o bin/terraform-provider-rackdog .
@@ -26,7 +28,6 @@ fmt:
 test:
 	go test ./... -v
 
-# Acceptance tests (requires real API/creds)
 acc:
 	TF_ACC=1 RACKDOG_API_KEY=$(RACKDOG_API_KEY) RACKDOG_ENDPOINT=$(RACKDOG_ENDPOINT) go test ./... -v -timeout=30m
 
