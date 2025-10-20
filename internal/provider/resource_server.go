@@ -11,12 +11,13 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/booldefault"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/boolplanmodifier"
 	"fmt"
 )
 
-type serverResource struct{ client *Client }
+type serverResource struct {
+    client *Client
+    cfg    resolvedConfig
+}
 
 func NewServerResource() resource.Resource { return &serverResource{} }
 
@@ -30,7 +31,6 @@ type serverModel struct {
 	Hostname   types.String `tfsdk:"hostname"`     
 	IPAddress  types.String `tfsdk:"ip_address"`   
 	Status     types.String `tfsdk:"status"`      
-	RecreateOnMissing types.Bool   `tfsdk:"recreate_on_missing"`
 }
 
 func (r *serverResource) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -79,24 +79,15 @@ func (r *serverResource) Schema(_ context.Context, _ resource.SchemaRequest, res
 				},
 			},
 			"status":      schema.StringAttribute{Computed: true},
-			"recreate_on_missing": schema.BoolAttribute{
-				Optional: true,
-				Computed: true,
-				Default:  booldefault.StaticBool(false), // default=false
-				PlanModifiers: []planmodifier.Bool{
-					boolplanmodifier.UseStateForUnknown(),
-				},
-				Description: "If true, when the server is missing (404) during Read, the resource will be removed from state so Terraform can recreate it. Default: false (fail instead).",
-			},
 		},
 	}
 }
 
 func (r *serverResource) Configure(_ context.Context, req resource.ConfigureRequest, _ *resource.ConfigureResponse) {
-	if req.ProviderData == nil {
-		return
-	}
-	r.client = req.ProviderData.(*Client)
+    if req.ProviderData == nil { return }
+    pd := req.ProviderData.(*ProviderData)
+    r.client = pd.Client
+    r.cfg    = pd.Cfg
 }
 
 func (r *serverResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
@@ -176,23 +167,22 @@ func (r *serverResource) Read(ctx context.Context, req resource.ReadRequest, res
 
 	s, err := r.client.GetServer(ctx, state.ID.ValueString())
 	if err != nil {
-		var he *HTTPError
-		if errors.As(err, &he) && he.Status == http.StatusNotFound {
-			// STRICT by default unless user opts in:
-			if !state.RecreateOnMissing.ValueBool() {
-				resp.Diagnostics.AddError(
-					"Server deleted outside Terraform",
-					"The server no longer exists (404) and `recreate_on_missing` is false. "+
-						"Either set `recreate_on_missing = true` to allow recreation, or import an existing server by ID.",
-				)
-				return
-			}
-			resp.State.RemoveResource(ctx)
-			return
-		}
-		resp.Diagnostics.AddError("Read failed", err.Error())
-		return
-	}	
+        var he *HTTPError
+        if errors.As(err, &he) && he.Status == http.StatusNotFound {
+            if !r.cfg.RecreateOnMissing {
+                resp.Diagnostics.AddError(
+                    "Server deleted outside Terraform",
+                    "The server no longer exists (404) and provider setting `recreate_on_missing` is false. "+
+                    "Enable it in the provider or import an existing server by ID.",
+                )
+                return
+            }
+            resp.State.RemoveResource(ctx) // lenient: allow plan to recreate
+            return
+        }
+        resp.Diagnostics.AddError("Read failed", err.Error())
+        return
+    }	
 	if s == nil {
 		resp.Diagnostics.AddError("Server missing", "API returned no error but also no server")
 		return
