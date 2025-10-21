@@ -149,7 +149,6 @@ func (r *serverResource) Create(ctx context.Context, req resource.CreateRequest,
 	}
 
 	//r.Read(ctx, resource.ReadRequest{State: resp.State}, &resp.ReadResponse)
-	return
 }
 
 func (r *serverResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
