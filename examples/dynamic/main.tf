@@ -12,7 +12,7 @@ data "rackdog_operating_systems" "all" {}
 data "rackdog_plans" "ny" { location = "ny" }
 
 locals {
-  chosen_plan = one([for p in data.rackdog_plans.ny.plans : p if p.name == "test 2"])
+  chosen_plan = one([for p in data.rackdog_plans.ny.plans : p if p.name == "test"])
   chosen_os   = data.rackdog_operating_systems.all.operating_systems[0]
 }
 

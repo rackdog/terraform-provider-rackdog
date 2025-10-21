@@ -67,6 +67,7 @@ func (r *serverResource) Schema(_ context.Context, _ resource.SchemaRequest, res
 			},
 			"hostname": schema.StringAttribute{
 				Optional: true,
+				Computed: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.RequiresReplace(),
 				},
