@@ -1,4 +1,3 @@
-
 package main
 
 import (
@@ -7,7 +6,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/providerserver"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 	"github.com/rackdog/terraform-provider-rackdog/internal/provider"
-) 
+)
 
 var version = "dev"
 
@@ -21,8 +20,8 @@ func main() {
 		tflog.Info(ctx, "Debug logging enabled")
 	}
 
-	providerserver.Serve(ctx, provider.New(version), providerserver.ServeOpts {
+	providerserver.Serve(ctx, provider.New(version), providerserver.ServeOpts{
 		Address: "registry.terraform.io/rackdog/rackdog",
 	})
-	
+
 }

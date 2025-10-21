@@ -18,13 +18,12 @@ type plansModel struct {
 }
 
 type planItem struct {
-	ID       types.Int64 `tfsdk:"id"`
-	Name     types.String `tfsdk:"name"`
-	RAMGB    types.Int64  `tfsdk:"ram"`
-	Storage  types.String `tfsdk:"storage"`
-	CPUName  types.String `tfsdk:"cpu_name"`
-	Cores    types.Int64  `tfsdk:"cores"`
-	Price    types.Float64 `tfsdk:"price_monthly"`
+	ID      types.Int64   `tfsdk:"id"`
+	Name    types.String  `tfsdk:"name"`
+	RAMGB   types.Int64   `tfsdk:"ram"`
+	Storage types.Int64   `tfsdk:"storage"`
+	CPUName types.String  `tfsdk:"cpu_name"`
+	Cores   types.Int64   `tfsdk:"cores"`
 }
 
 func (d *plansDataSource) Metadata(_ context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
@@ -46,7 +45,6 @@ func (d *plansDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, 
 						"storage":       schema.StringAttribute{Computed: true},
 						"cpu_name":      schema.StringAttribute{Computed: true},
 						"cores":         schema.Int64Attribute{Computed: true},
-						"price_monthly": schema.Float64Attribute{Computed: true},
 					},
 				},
 			},
@@ -58,7 +56,8 @@ func (d *plansDataSource) Configure(_ context.Context, req datasource.ConfigureR
 	if req.ProviderData == nil {
 		return
 	}
-	d.client = req.ProviderData.(*Client)
+	pd := req.ProviderData.(*ProviderData)
+	d.client = pd.Client
 }
 
 func (d *plansDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
@@ -87,16 +86,14 @@ func (d *plansDataSource) Read(ctx context.Context, req datasource.ReadRequest, 
 	state := plansModel{Location: config.Location, Plans: make([]planItem, 0, len(plans))}
 	for _, p := range plans {
 		state.Plans = append(state.Plans, planItem{
-			ID:           types.Int64Value(int64(p.ID)),
-			Name:         types.StringValue(p.Name),
-			RAMGB:        types.Int64Value(int64(p.RAMGB)),
-			Storage:      types.StringValue(p.Storage),
-			CPUName:      types.StringValue(p.CPU.Name),
-			Cores:        types.Int64Value(int64(p.CPU.Cores)),
-			Price:        types.Float64Value(p.Price.Monthly),
+			ID:      types.Int64Value(int64(p.ID)),
+			Name:    types.StringValue(p.Name),
+			RAMGB:   types.Int64Value(int64(p.RAMGB)),
+			Storage: types.Int64Value(int64(p.Storage)),
+			CPUName: types.StringValue(p.CPU.Name),
+			Cores:   types.Int64Value(int64(p.CPU.Cores)),
 		})
 	}
 
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 }
-

@@ -5,18 +5,18 @@ import (
 	"errors"
 	"net/http"
 
+	"fmt"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
-	"github.com/hashicorp/terraform-plugin-framework/types"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
-	"fmt"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
 type serverResource struct {
-    client *Client
-    cfg    resolvedConfig
+	client *Client
+	cfg    resolvedConfig
 }
 
 func NewServerResource() resource.Resource { return &serverResource{} }
@@ -24,13 +24,13 @@ func NewServerResource() resource.Resource { return &serverResource{} }
 // Terraform model: what users set / what we store
 type serverModel struct {
 	ID         types.String `tfsdk:"id"`
-	PlanID     types.Int64  `tfsdk:"plan_id"`      
-	LocationID types.Int64  `tfsdk:"location_id"`  
-	OSID       types.Int64  `tfsdk:"os_id"`        
-	Raid       types.Int64  `tfsdk:"raid"`         
-	Hostname   types.String `tfsdk:"hostname"`     
-	IPAddress  types.String `tfsdk:"ip_address"`   
-	Status     types.String `tfsdk:"status"`      
+	PlanID     types.Int64  `tfsdk:"plan_id"`
+	LocationID types.Int64  `tfsdk:"location_id"`
+	OSID       types.Int64  `tfsdk:"os_id"`
+	Raid       types.Int64  `tfsdk:"raid"`
+	Hostname   types.String `tfsdk:"hostname"`
+	IPAddress  types.String `tfsdk:"ip_address"`
+	Status     types.String `tfsdk:"status"`
 }
 
 func (r *serverResource) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -41,8 +41,8 @@ func (r *serverResource) Schema(_ context.Context, _ resource.SchemaRequest, res
 	resp.Schema = schema.Schema{
 		Description: "Manages Rackdog servers.",
 		Attributes: map[string]schema.Attribute{
-			"id":          schema.StringAttribute{Computed: true},
-			"plan_id":     schema.Int64Attribute{
+			"id": schema.StringAttribute{Computed: true},
+			"plan_id": schema.Int64Attribute{
 				Required: true,
 				PlanModifiers: []planmodifier.Int64{
 					int64planmodifier.RequiresReplace(),
@@ -54,40 +54,42 @@ func (r *serverResource) Schema(_ context.Context, _ resource.SchemaRequest, res
 					int64planmodifier.RequiresReplace(),
 				},
 			},
-			"os_id":       schema.Int64Attribute{
+			"os_id": schema.Int64Attribute{
 				Required: true,
 				PlanModifiers: []planmodifier.Int64{
 					int64planmodifier.RequiresReplace(),
 				},
 			},
-			"raid":        schema.Int64Attribute{
+			"raid": schema.Int64Attribute{
 				Optional: true,
 				PlanModifiers: []planmodifier.Int64{
 					int64planmodifier.RequiresReplace(),
 				},
-			},         
-			"hostname":    schema.StringAttribute{
+			},
+			"hostname": schema.StringAttribute{
 				Optional: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.RequiresReplace(),
 				},
-			},        
-			"ip_address":  schema.StringAttribute{
+			},
+			"ip_address": schema.StringAttribute{
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.RequiresReplace(),
 				},
 			},
-			"status":      schema.StringAttribute{Computed: true},
+			"status": schema.StringAttribute{Computed: true},
 		},
 	}
 }
 
 func (r *serverResource) Configure(_ context.Context, req resource.ConfigureRequest, _ *resource.ConfigureResponse) {
-    if req.ProviderData == nil { return }
-    pd := req.ProviderData.(*ProviderData)
-    r.client = pd.Client
-    r.cfg    = pd.Cfg
+	if req.ProviderData == nil {
+		return
+	}
+	pd := req.ProviderData.(*ProviderData)
+	r.client = pd.Client
+	r.cfg = pd.Cfg
 }
 
 func (r *serverResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
@@ -167,22 +169,22 @@ func (r *serverResource) Read(ctx context.Context, req resource.ReadRequest, res
 
 	s, err := r.client.GetServer(ctx, state.ID.ValueString())
 	if err != nil {
-        var he *HTTPError
-        if errors.As(err, &he) && he.Status == http.StatusNotFound {
-            if !r.cfg.RecreateOnMissing {
-                resp.Diagnostics.AddError(
-                    "Server deleted outside Terraform",
-                    "The server no longer exists (404) and provider setting `recreate_on_missing` is false. "+
-                    "Enable it in the provider or import an existing server by ID.",
-                )
-                return
-            }
-            resp.State.RemoveResource(ctx) // lenient: allow plan to recreate
-            return
-        }
-        resp.Diagnostics.AddError("Read failed", err.Error())
-        return
-    }	
+		var he *HTTPError
+		if errors.As(err, &he) && he.Status == http.StatusNotFound {
+			if !r.cfg.RecreateOnMissing {
+				resp.Diagnostics.AddError(
+					"Server deleted outside Terraform",
+					"The server no longer exists (404) and provider setting `recreate_on_missing` is false. "+
+						"Enable it in the provider or import an existing server by ID.",
+				)
+				return
+			}
+			resp.State.RemoveResource(ctx) // lenient: allow plan to recreate
+			return
+		}
+		resp.Diagnostics.AddError("Read failed", err.Error())
+		return
+	}
 	if s == nil {
 		resp.Diagnostics.AddError("Server missing", "API returned no error but also no server")
 		return
@@ -194,7 +196,7 @@ func (r *serverResource) Read(ctx context.Context, req resource.ReadRequest, res
 			fmt.Sprintf("Remote hostname is %q but state expected %q. This likely happened outside Terraform (portal/api). "+
 				"Please reconcile: either update your config to match, import the correct resource, or replace this server.",
 				*s.Hostname, state.Hostname.ValueString()),
-			)
+		)
 		return
 	}
 
@@ -269,4 +271,3 @@ func (r *serverResource) Delete(ctx context.Context, req resource.DeleteRequest,
 		resp.Diagnostics.AddError("Delete failed", err.Error())
 	}
 }
-

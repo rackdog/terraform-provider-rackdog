@@ -83,36 +83,36 @@ func (c *Client) do(ctx context.Context, method, path string, body any, out any)
 // ---- API models (mirror JSON) ----
 
 type JobStatus struct {
-	ID   int `json:"id"`
+	ID   int    `json:"id"`
 	Name string `json:"name"`
 }
 
 type ServerOS struct {
-	ID   int `json:"id"`
+	ID   int    `json:"id"`
 	Name string `json:"name"`
 }
 
 type ServerPlan struct {
-	ID      int `json:"id"`
+	ID      int    `json:"id"`
 	Name    string `json:"name"`
 	RAMGB   int    `json:"ram"`
-	Storage int `json:"storage"`
+	Storage int    `json:"storage"`
 	CPUName string `json:"cpuName"`
 	Cores   int    `json:"cores"`
 }
 
 type ServerLocation struct {
-	ID      int `json:"id"`
+	ID      int    `json:"id"`
 	Name    string `json:"name"`
 	Keyword string `json:"keyword"`
-	Country string    `json:"country"`
+	Country string `json:"country"`
 }
 
 type CreateServerRequest struct {
-	PlanID     int  `json:"planId"`
-	LocationID int  `json:"locationId"`
-	OSID       int `json:"osId"`
-	Raid       *int `json:"raid,omitempty"`
+	PlanID     int     `json:"planId"`
+	LocationID int     `json:"locationId"`
+	OSID       int     `json:"osId"`
+	Raid       *int    `json:"raid,omitempty"`
 	Hostname   *string `json:"hostname,omitempty"`
 }
 
@@ -121,7 +121,7 @@ type Server struct {
 	Plan         ServerPlan     `json:"plan"`
 	Location     ServerLocation `json:"location"`
 	ServerOS     *ServerOS      `json:"serverOS,omitempty"`
-	Raid         *int        	`json:"raid,omitempty"`
+	Raid         *int           `json:"raid,omitempty"`
 	Hostname     *string        `json:"hostname,omitempty"`
 	IPAddress    string         `json:"ipAddress,omitempty"`
 	PowerStatus  *string        `json:"devicePowerStatus,omitempty"`
@@ -136,40 +136,35 @@ type ServerListItem struct {
 }
 
 type CPU struct {
-	Name  string `json:"name"`
-	Cores int    `json:"cores"`
+	Name  string  `json:"name"`
+	Cores int     `json:"cores"`
 	Speed float64 `json:"speedGhz"`
 }
 
-type Price struct {
-	Monthly float64 `json:"monthly"`
-}
-
 type PlanLocation struct {
-	ID           int `json:"id"`
+	ID           int    `json:"id"`
 	Name         string `json:"name"`
 	Keyword      string `json:"keyword"`
 	MonthlyPrice int    `json:"monthlyPrice"`
 }
 
 type Plan struct {
-	ID        int         `json:"id"`
+	ID        int            `json:"id"`
 	Name      string         `json:"name"`
 	CPU       CPU            `json:"cpu"`
-	Price     Price          `json:"price"`
 	Locations []PlanLocation `json:"locations"`
 	RAMGB     int            `json:"ram"`
-	Storage   string         `json:"storageGb"`
+	Storage   int         	 `json:"storageGb"`
 }
 
-////////
+// //////
 // Responses from api
-////////
+// //////
 type EnvelopeServer struct {
-	Success    bool           `json:"success"`
-	Data       Server         `json:"data"`
-	Message    string         `json:"message"`
-	TotalCount int            `json:"totalCount,omitempty"`
+	Success    bool   `json:"success"`
+	Data       Server `json:"data"`
+	Message    string `json:"message"`
+	TotalCount int    `json:"totalCount,omitempty"`
 }
 
 type EnvelopeServerListItem struct {
@@ -191,9 +186,9 @@ type EnvelopeRaidCheck struct {
 }
 
 type EnvelopeOS struct {
-	Success bool           `json:"success"`
-	Data    []ServerOS     `json:"data"`
-	Message string         `json:"message"`
+	Success bool       `json:"success"`
+	Data    []ServerOS `json:"data"`
+	Message string     `json:"message"`
 }
 
 func (c *Client) CreateServer(ctx context.Context, reqBody *CreateServerRequest) (*ServerListItem, error) {
@@ -202,7 +197,7 @@ func (c *Client) CreateServer(ctx context.Context, reqBody *CreateServerRequest)
 		return nil, err
 	}
 	if !env.Success {
-		return nil, fmt.Errorf(env.Message)
+		return nil, fmt.Errorf("%s", env.Message)
 	}
 	// Return the lightweight item the create endpoint gives you
 	out := env.Data
@@ -215,7 +210,7 @@ func (c *Client) GetServer(ctx context.Context, id string) (*Server, error) {
 		return nil, err
 	}
 	if !env.Success {
-		return nil, fmt.Errorf(env.Message)
+		return nil, fmt.Errorf("%s", env.Message)
 	}
 	out := env.Data
 	return &out, nil
@@ -235,7 +230,7 @@ func (c *Client) ListPlans(ctx context.Context, location string) ([]Plan, error)
 		return nil, err
 	}
 	if !env.Success {
-		return nil, fmt.Errorf(env.Message)
+		return nil, fmt.Errorf("%s", env.Message)
 	}
 	return env.Data, nil
 }
@@ -247,7 +242,7 @@ func (c *Client) CheckRaid(ctx context.Context, raid int, planID int) (bool, err
 		return false, err
 	}
 	if !env.Success {
-		return false, fmt.Errorf(env.Message)
+		return false, fmt.Errorf("%s", env.Message)
 	}
 	return true, nil
 }
@@ -258,7 +253,7 @@ func (c *Client) ListOperatingSystems(ctx context.Context) ([]ServerOS, error) {
 		return nil, err
 	}
 	if !env.Success {
-		return nil, fmt.Errorf(env.Message)
+		return nil, fmt.Errorf("%s", env.Message)
 	}
 	return env.Data, nil
 }

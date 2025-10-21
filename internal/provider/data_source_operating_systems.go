@@ -46,7 +46,8 @@ func (d *osDataSource) Configure(_ context.Context, req datasource.ConfigureRequ
 	if req.ProviderData == nil {
 		return
 	}
-	d.client = req.ProviderData.(*Client)
+	pd := req.ProviderData.(*ProviderData)
+	d.client = pd.Client
 }
 
 func (d *osDataSource) Read(ctx context.Context, _ datasource.ReadRequest, resp *datasource.ReadResponse) {
@@ -71,4 +72,3 @@ func (d *osDataSource) Read(ctx context.Context, _ datasource.ReadRequest, resp 
 
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 }
-

@@ -1,11 +1,11 @@
 package provider
 
 import (
-	"context"
 	"os"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-framework/providerserver"
+	"github.com/hashicorp/terraform-plugin-go/tfprotov6"
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 )
 
@@ -35,7 +35,7 @@ resource "rackdog_server" "test" {
 `
 
 	resource.Test(t, resource.TestCase{
-		ProtoV6ProviderFactories: map[string]func() (any, error){
+		ProtoV6ProviderFactories: map[string]func() (tfprotov6.ProviderServer, error){
 			"rackdog": providerserver.NewProtocol6WithError(New("test")()),
 		},
 		Steps: []resource.TestStep{
@@ -46,4 +46,3 @@ resource "rackdog_server" "test" {
 		},
 	})
 }
-
