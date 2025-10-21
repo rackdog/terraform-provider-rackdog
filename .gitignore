@@ -5,3 +5,4 @@ examples/dynamic/terraform*
 coverage.html
 coverage.out
 /bin
+/dist
