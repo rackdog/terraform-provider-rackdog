@@ -3,3 +3,5 @@ bin
 terraform-provider-rackdog
 examples/basic/terraform*
 examples/dynamic/terraform*
+coverage.html
+coverage.out
