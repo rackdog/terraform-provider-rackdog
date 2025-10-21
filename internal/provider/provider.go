@@ -91,7 +91,6 @@ func (p *rackdogProvider) Configure(ctx context.Context, req provider.ConfigureR
 		Cfg:    resolvedConfig{RecreateOnMissing: recreate},
 	}
 
-	// Make available to resources and data sources
 	resp.DataSourceData = pd
 	resp.ResourceData = pd
 

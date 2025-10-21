@@ -21,7 +21,6 @@ type serverResource struct {
 
 func NewServerResource() resource.Resource { return &serverResource{} }
 
-// Terraform model: what users set / what we store
 type serverModel struct {
 	ID         types.String `tfsdk:"id"`
 	PlanID     types.Int64  `tfsdk:"plan_id"`
@@ -137,7 +136,6 @@ func (r *serverResource) Create(ctx context.Context, req resource.CreateRequest,
 		return
 	}
 
-	// Seed state
 	plan.ID = types.StringValue(created.ID)
 	if created.Hostname != nil {
 		plan.Hostname = types.StringValue(*created.Hostname)
@@ -150,7 +148,6 @@ func (r *serverResource) Create(ctx context.Context, req resource.CreateRequest,
 		return
 	}
 
-	// Hydrate full details
 	//r.Read(ctx, resource.ReadRequest{State: resp.State}, &resp.ReadResponse)
 	return
 }

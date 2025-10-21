@@ -80,8 +80,6 @@ func (c *Client) do(ctx context.Context, method, path string, body any, out any)
 	}
 }
 
-// ---- API models (mirror JSON) ----
-
 type JobStatus struct {
 	ID   int    `json:"id"`
 	Name string `json:"name"`
@@ -199,7 +197,6 @@ func (c *Client) CreateServer(ctx context.Context, reqBody *CreateServerRequest)
 	if !env.Success {
 		return nil, fmt.Errorf("%s", env.Message)
 	}
-	// Return the lightweight item the create endpoint gives you
 	out := env.Data
 	return &out, nil
 }

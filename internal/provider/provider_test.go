@@ -34,7 +34,7 @@ func TestProvider_Schema(t *testing.T) {
 		t.Fatal("expected schema attributes, got nil")
 	}
 
-	// Check for required attributes
+	// required attributes
 	attrs := []string{"endpoint", "api_key", "recreate_on_missing"}
 	for _, attr := range attrs {
 		if _, ok := resp.Schema.Attributes[attr]; !ok {
@@ -44,8 +44,6 @@ func TestProvider_Schema(t *testing.T) {
 }
 
 func TestProvider_Configure_WithConfig(t *testing.T) {
-	// Simplified test - just verify that NewClient works
-	// Full Configure testing requires complex Terraform framework setup
 	client := NewClient("https://test.rackdog.com", "test-api-key-123")
 
 	if client == nil {
@@ -62,7 +60,6 @@ func TestProvider_Configure_WithConfig(t *testing.T) {
 }
 
 func TestProvider_Configure_WithEnv(t *testing.T) {
-	// Test environment variable reading
 	os.Setenv("RACKDOG_API_KEY", "env-api-key")
 	os.Setenv("RACKDOG_ENDPOINT", "https://env.rackdog.com")
 	defer func() {
@@ -70,7 +67,6 @@ func TestProvider_Configure_WithEnv(t *testing.T) {
 		os.Unsetenv("RACKDOG_ENDPOINT")
 	}()
 
-	// Verify environment variables are set correctly
 	apiKey := os.Getenv("RACKDOG_API_KEY")
 	endpoint := os.Getenv("RACKDOG_ENDPOINT")
 
@@ -82,7 +78,6 @@ func TestProvider_Configure_WithEnv(t *testing.T) {
 		t.Errorf("expected RACKDOG_ENDPOINT 'https://env.rackdog.com', got '%s'", endpoint)
 	}
 
-	// Verify client can be created from env vars
 	client := NewClient(endpoint, apiKey)
 	if client == nil {
 		t.Fatal("expected Client to be created, got nil")
@@ -90,16 +85,11 @@ func TestProvider_Configure_WithEnv(t *testing.T) {
 }
 
 func TestProvider_Configure_MissingAPIKey(t *testing.T) {
-	// Simplified test - verify that empty API key is handled
-	// The actual Configure method will check for empty API key and add diagnostic
-
-	// Test that schema marks api_key as required or has proper validation
 	p := New("dev")()
 	schemaReq := provider.SchemaRequest{}
 	schemaResp := &provider.SchemaResponse{}
 	p.Schema(context.Background(), schemaReq, schemaResp)
 
-	// Verify api_key attribute exists - validation happens during Configure
 	if _, ok := schemaResp.Schema.Attributes["api_key"]; !ok {
 		t.Error("expected 'api_key' attribute in schema")
 	}
@@ -114,7 +104,6 @@ func TestProvider_Resources(t *testing.T) {
 		t.Fatal("expected at least one resource, got none")
 	}
 
-	// Check that server resource exists
 	foundServer := false
 	for _, res := range resources {
 		r := res()

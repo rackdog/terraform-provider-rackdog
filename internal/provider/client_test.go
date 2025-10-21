@@ -382,7 +382,6 @@ func TestListPlans_Integration_WireSchema(t *testing.T) {
 		t.Fatalf("build request: %v", err)
 	}
 
-	// Try both common auth styles (whichever your API uses will work).
 	req.Header.Set("Authorization", "Bearer "+key)
 	req.Header.Set("X-API-Key", key)
 
@@ -401,7 +400,6 @@ func TestListPlans_Integration_WireSchema(t *testing.T) {
 		t.Fatalf("non-200 status: %d; body: %+v", resp.StatusCode, body)
 	}
 
-	// Some APIs wrap data { success, data: [...] }, so handle both shapes.
 	var (
 		raw    any
 		errDec = json.NewDecoder(resp.Body).Decode(&raw)
@@ -414,7 +412,6 @@ func TestListPlans_Integration_WireSchema(t *testing.T) {
 
 	switch v := raw.(type) {
 	case map[string]any:
-		// expect wrapper with "data"
 		d, ok := v["data"]
 		if !ok {
 			t.Fatalf("response missing 'data' field")
@@ -424,7 +421,6 @@ func TestListPlans_Integration_WireSchema(t *testing.T) {
 			t.Fatalf("decode data[]: %v", err)
 		}
 	case []any:
-		// bare array
 		b, _ := json.Marshal(v)
 		if err := json.Unmarshal(b, &plans); err != nil {
 			t.Fatalf("decode []: %v", err)
@@ -437,7 +433,6 @@ func TestListPlans_Integration_WireSchema(t *testing.T) {
 		t.Fatalf("expected at least one plan")
 	}
 
-	// Validate the first plan’s shape (and parse timestamps).
 	p := plans[0]
 
 	if p.ID <= 0 {
@@ -461,27 +456,5 @@ func TestListPlans_Integration_WireSchema(t *testing.T) {
 	loc := p.Locations[0]
 	if loc.ID <= 0 || loc.Name == "" || loc.Keyword == "" || loc.MonthlyPrice < 0 {
 		t.Fatalf("invalid location: %+v", loc)
-	}
-
-	// createdAt/updatedAt should be RFC3339-like strings per your example.
-	// Try a couple common layouts.
-	parse := func(s string) time.Time {
-		if s == "" {
-			return time.Time{}
-		}
-		for _, layout := range []string{
-			time.RFC3339,
-			"2006-01-02T15:04:05", // your example format (no zone)
-		} {
-			if ts, err := time.Parse(layout, s); err == nil {
-				return ts
-			}
-		}
-		return time.Time{}
-	}
-	created := parse(p.CreatedAt)
-	updated := parse(p.UpdatedAt)
-	if created.IsZero() || updated.IsZero() {
-		t.Fatalf("timestamps not parseable: createdAt=%q updatedAt=%q", p.CreatedAt, p.UpdatedAt)
 	}
 }

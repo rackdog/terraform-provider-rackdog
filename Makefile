@@ -37,32 +37,22 @@ example-dynamic-destroy:
 fmt:
 	go fmt ./...
 
-# Run unit tests
 test:
 	go test ./... -v
 
-# Run tests with coverage
 test-coverage:
 	go test ./... -v -race -coverprofile=coverage.out -covermode=atomic
 	go tool cover -func=coverage.out
 
-# Run full test suite with formatting, linting, and coverage
 test-all:
 	./run-tests.sh
 
-# Run acceptance tests (requires real API credentials)
-acc:
-	TF_ACC=1 RACKDOG_API_KEY=$(RACKDOG_API_KEY) RACKDOG_ENDPOINT=$(RACKDOG_ENDPOINT) go test ./... -v -timeout=30m
-
-# View coverage report in browser
 coverage-html:
 	go tool cover -html=coverage.out
 
-# Run tests in watch mode (requires entr)
 test-watch:
 	find . -name '*.go' | entr -c go test ./... -v
 
-# Clean test artifacts
 clean-test:
 	rm -f coverage.out coverage.html
 
