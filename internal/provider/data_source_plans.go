@@ -18,12 +18,12 @@ type plansModel struct {
 }
 
 type planItem struct {
-	ID      types.Int64   `tfsdk:"id"`
-	Name    types.String  `tfsdk:"name"`
-	RAMGB   types.Int64   `tfsdk:"ram"`
-	Storage types.Int64   `tfsdk:"storage"`
-	CPUName types.String  `tfsdk:"cpu_name"`
-	Cores   types.Int64   `tfsdk:"cores"`
+	ID      types.Int64  `tfsdk:"id"`
+	Name    types.String `tfsdk:"name"`
+	RAMGB   types.Int64  `tfsdk:"ram"`
+	Storage types.Int64  `tfsdk:"storage"`
+	CPUName types.String `tfsdk:"cpu_name"`
+	Cores   types.Int64  `tfsdk:"cores"`
 }
 
 func (d *plansDataSource) Metadata(_ context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
@@ -39,12 +39,12 @@ func (d *plansDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, 
 				Computed: true,
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
-						"id":            schema.StringAttribute{Computed: true},
-						"name":          schema.StringAttribute{Computed: true},
-						"ram":           schema.Int64Attribute{Computed: true},
-						"storage":       schema.StringAttribute{Computed: true},
-						"cpu_name":      schema.StringAttribute{Computed: true},
-						"cores":         schema.Int64Attribute{Computed: true},
+						"id":       schema.Int64Attribute{Computed: true},
+						"name":     schema.StringAttribute{Computed: true},
+						"ram":      schema.Int64Attribute{Computed: true},
+						"storage":  schema.Int64Attribute{Computed: true},
+						"cpu_name": schema.StringAttribute{Computed: true},
+						"cores":    schema.Int64Attribute{Computed: true},
 					},
 				},
 			},

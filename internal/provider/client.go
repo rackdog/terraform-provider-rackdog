@@ -154,7 +154,7 @@ type Plan struct {
 	CPU       CPU            `json:"cpu"`
 	Locations []PlanLocation `json:"locations"`
 	RAMGB     int            `json:"ram"`
-	Storage   int         	 `json:"storageGb"`
+	Storage   int            `json:"storageGb"`
 }
 
 // //////
@@ -222,9 +222,9 @@ func (c *Client) DeleteServer(ctx context.Context, id string) error {
 
 func (c *Client) ListPlans(ctx context.Context, location string) ([]Plan, error) {
 	var env EnvelopePlans
-	path := "/v1/ordering/plans"
+	path := "/v1/ordering/plans?showAll=true"
 	if location != "" {
-		path += "?location=" + url.QueryEscape(location)
+		path += "&location=" + url.QueryEscape(location)
 	}
 	if err := c.do(ctx, http.MethodGet, path, nil, &env); err != nil {
 		return nil, err

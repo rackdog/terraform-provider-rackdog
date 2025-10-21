@@ -25,6 +25,15 @@ example-apply:
 example-destroy:
 	set -a; source .env; set +a && cd examples/basic && terraform destroy -auto-approve
 
+example-dynamic-plan:
+	set -a; source .env; set +a && cd examples/dynamic && terraform plan
+
+example-dynamic-apply:
+	set -a; source .env; set +a && cd examples/dynamic && terraform apply -auto-approve
+
+example-dynamic-destroy:
+	set -a; source .env; set +a && cd examples/dynamic && terraform destroy -auto-approve
+
 fmt:
 	go fmt ./...
 

@@ -5,8 +5,8 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
-	"testing"
 	"os"
+	"testing"
 	"time"
 )
 
@@ -335,9 +335,9 @@ func TestClientAPIKeyHeader(t *testing.T) {
 	}
 }
 
-///////////
-/// integration tests that run against actual api 
-///////////
+// /////////
+// / integration tests that run against actual api
+// /////////
 type planWire struct {
 	ID          int    `json:"id"`
 	Name        string `json:"name"`
@@ -364,9 +364,9 @@ type planWire struct {
 }
 
 func TestListPlans_Integration_WireSchema(t *testing.T) {
-	base := os.Getenv("RACKDOG_API_URL") 
-	key := os.Getenv("RACKDOG_API_KEY") 
-	location := os.Getenv("RACKDOG_LOCATION") 
+	base := os.Getenv("RACKDOG_API_URL")
+	key := os.Getenv("RACKDOG_API_KEY")
+	location := os.Getenv("RACKDOG_LOCATION")
 
 	if base == "" || key == "" {
 		t.Skip("set RACKDOG_API_URL and RACKDOG_API_KEY to run integration tests")
@@ -403,7 +403,7 @@ func TestListPlans_Integration_WireSchema(t *testing.T) {
 
 	// Some APIs wrap data { success, data: [...] }, so handle both shapes.
 	var (
-		raw any
+		raw    any
 		errDec = json.NewDecoder(resp.Body).Decode(&raw)
 	)
 	if errDec != nil {

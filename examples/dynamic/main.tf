@@ -3,14 +3,16 @@ terraform {
     rackdog = { source = "rackdog/rackdog", version = "0.0.1" }
   }
 }
-provider "rackdog" {}
+provider "rackdog" {
+  recreate_on_missing = true
+}
 
 data "rackdog_operating_systems" "all" {}
 
 data "rackdog_plans" "ny" { location = "ny" }
 
 locals {
-  chosen_plan = one([for p in data.rackdog_plans.ny.plans : p if p.name == "test"])
+  chosen_plan = one([for p in data.rackdog_plans.ny.plans : p if p.name == "test 2"])
   chosen_os   = data.rackdog_operating_systems.all.operating_systems[0]
 }
 
