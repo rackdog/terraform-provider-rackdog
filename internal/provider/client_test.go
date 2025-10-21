@@ -7,7 +7,6 @@ import (
 	"net/http/httptest"
 	"os"
 	"testing"
-	"time"
 )
 
 func TestListOperatingSystems(t *testing.T) {
@@ -49,12 +48,12 @@ func TestListPlans(t *testing.T) {
 		{
 			name:     "without location filter",
 			location: "",
-			wantPath: "/v1/ordering/plans",
+			wantPath: "/v1/ordering/plans?showAll=true",
 		},
 		{
 			name:     "with location filter",
 			location: "NY",
-			wantPath: "/v1/ordering/plans?location=NY",
+			wantPath: "/v1/ordering/plans?showAll=true&location=NY",
 		},
 	}
 
