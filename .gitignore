@@ -1,3 +1,5 @@
 .env
 bin
 terraform-provider-rackdog
+examples/basic/terraform*
+examples/dynamic/terraform*
