@@ -21,5 +21,8 @@ signs:
     cmd: gpg
     args: ["--batch","--yes","--armor","--detach-sign","--local-user","{{ .Env.GPG_KEY_ID }}","--output","${signature}","${artifact}"]
 release:
+  github:
+    owner: rackdog
+    name: terraform-provider-rackdog
   draft: true
   replace_existing_artifacts: true
