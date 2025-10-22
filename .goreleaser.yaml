@@ -22,4 +22,4 @@ signs:
     args: ["--batch","--yes","--armor","--detach-sign","--local-user","{{ .Env.GPG_KEY_ID }}","--output","${signature}","${artifact}"]
 release:
   draft: true
-
+  replace_existing_artifacts: true
