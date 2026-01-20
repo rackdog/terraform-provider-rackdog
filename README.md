@@ -8,8 +8,6 @@ Rackdog combines high-performance bare-metal automation with a modern API and Te
 
 ## Example
 
-Starting with Terraform 0.13+, providers are automatically installed from the Terraform Registry.
-
 ```hcl
 terraform {
   required_providers {
