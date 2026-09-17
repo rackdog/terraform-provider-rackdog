@@ -11,7 +11,7 @@ Rackdog combines high-performance bare-metal automation with a modern API and Te
 ```hcl
 terraform {
   required_providers {
-    rackdog = { source = "rackdog/rackdog", version = "0.0.5" }
+    rackdog = { source = "rackdog/rackdog", version = "~> 1.0" }
   }
 }
 provider "rackdog" {
@@ -33,5 +33,4 @@ resource "rackdog_server" "web" {
   os_id       = local.chosen_os.id                    
   hostname    = "web-01"
 }
-
 

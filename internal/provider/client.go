@@ -139,20 +139,12 @@ type CPU struct {
 	Speed float64 `json:"speedGhz"`
 }
 
-type PlanLocation struct {
-	ID           int    `json:"id"`
-	Name         string `json:"name"`
-	Keyword      string `json:"keyword"`
-	MonthlyPrice int    `json:"monthlyPrice"`
-}
-
 type Plan struct {
-	ID        int            `json:"id"`
-	Name      string         `json:"name"`
-	CPU       CPU            `json:"cpu"`
-	Locations []PlanLocation `json:"locations"`
-	RAMGB     int            `json:"ram"`
-	Storage   int            `json:"storageGb"`
+	ID      int    `json:"id"`
+	Name    string `json:"name"`
+	CPU     CPU    `json:"cpu"`
+	RAMGB   int    `json:"ram"`
+	Storage int    `json:"storageGb"`
 }
 
 // //////

@@ -80,7 +80,7 @@ func TestListPlans(t *testing.T) {
 									"id":           1,
 									"name":         "New York",
 									"keyword":      "NY",
-									"monthlyPrice": 99,
+									"monthlyPrice": 343.0,
 								},
 							},
 							"ram":       16,
